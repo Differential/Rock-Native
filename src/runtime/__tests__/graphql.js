@@ -67,7 +67,7 @@ describe("graphqlEndpoint", () => {
     }).run(event);
     expect(statusCode).toEqual(200);
     expect(JSON.parse(body)).toEqual({
-      data: { sample: { code: 200, message: "hello world" } },
+      data: { sample: { code: 401, message: "hello world" } },
     });
     expect(headers["Content-Type"]).toEqual("application/json");
     expect(headers["Access-Control-Allow-Origin"]).toEqual("*");

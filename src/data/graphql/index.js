@@ -1,41 +1,38 @@
 // @flow
 import { graphql as graphqljs } from "graphql";
-import { makeExecutableSchema } from "graphql-tools";
 import { print } from "graphql/language/printer";
 import type { ExecutionResult, DocumentNode } from "graphql";
 
-export const typeDefs = `
-type Response {
-  code: Int!
-  message: String
-}
+import { Schema, Type, Field, IntType, StringField } from "../../heighliner";
 
-# the schema allows the following query:
-type Query {
-  sample: Response
-}
-
-schema {
-  query: Query
-}
-`;
-
-type ISample = {
-  code: number,
-  message: string,
+// for use via contramap
+const isLoggedIn = (_, $, ctx) => {
+  return ctx && ctx.user ? _ : { code: 401 };
 };
 
-export const resolvers = {
-  Query: {
-    sample: (): ISample => ({ code: 200, message: "hello world" }),
-  },
-  Response: {
-    code: ({ code }: ISample): number => code,
-    message: ({ message }: ISample): string => message,
-  },
-};
+// for use via map
+const isSuccess = code => (code === 200 ? 204 : code);
 
-export const schema = makeExecutableSchema({ typeDefs, resolvers });
+// build Response type
+export const code = Field(IntType, ({ code }) => code)
+  .contramap(isLoggedIn)
+  .map(isSuccess);
+
+export const message = StringField(({ message }) => message);
+
+export const Sample = Type("Sample", { code, message });
+
+// build root query type
+export const sample = Field(Sample, () =>
+  Promise.resolve({
+    code: 200,
+    message: "hello world",
+  }),
+);
+export const query = Type("Query", { sample });
+
+// build the schema
+export const schema = Schema(query);
 
 export const safeQuery = (query: string | DocumentNode): string =>
   typeof query === "string" ? query : print(query);
