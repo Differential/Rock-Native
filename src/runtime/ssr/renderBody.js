@@ -4,11 +4,8 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router";
 
-import {
-  getDataFromTree,
-  ApolloClient,
-  ApolloProvider as Provider,
-} from "react-apollo";
+import { getDataFromTree, ApolloProvider as Provider } from "react-apollo";
+import ApolloClient from "apollo-client";
 
 import createNetworkInterface from "../../data/graphql/networkInterface.server";
 // import { createContextFromRequestEvent } from "../graphql";

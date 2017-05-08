@@ -1,5 +1,5 @@
 //@flow
-import { createBatchingNetworkInterface } from "react-apollo";
+import { createBatchingNetworkInterface } from "apollo-client";
 
 export default () =>
   createBatchingNetworkInterface({
