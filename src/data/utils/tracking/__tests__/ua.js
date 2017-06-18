@@ -5,19 +5,37 @@ import {
   trackPageView,
   trackEvent,
   trackTransaction,
+  UA_CODE,
+  UA_APP,
+  ua,
+  FUN,
 } from "../ua";
 
-// jest.mock("../ua");
+function mockFunctions() {
+  console.log("called");
+  const original = require.requireActual("../ua");
+  return {
+    ...original, //Pass down all the exported objects
+    ua: () => ({
+      screenview: jest.fn((screen, UA_APP) => ({
+        send: jest.fn(),
+      })),
+    }),
+  };
+}
+jest.mock("../ua", () => mockFunctions());
 
 describe("Universal Analytics", () => {
   describe("Track Screen View", () => {
-    xit("should call uaVisitor.screenview when uaVisitor is passed", () => {
-      // const uaVisitor = {
-      //   screenview: jest.fn(),
-      // };
-      // const screen = "Giving Step 1";
-      // trackScreenView(screen);
+    it("should call uaVisitor.screenview when uaVisitor is passed", () => {
+      const screen = "Giving Step 1";
+      trackScreenView(screen);
+      expect(ua().screenview).toBeCalledWith(screen, UA_APP);
       // expect(uaVisitor.screenview).toHaveBeenCalled();
+
+      // const theCode = ua("1234");
+      // console.log("theCode = ", theCode);
+      // console.log("theCode.screenview = ", theCode.screenview);
       // I tried a few things here, but I'm not sure how I
       // am supposed to get trackScreenView or any of the other
       // functions to know what uaVisitor is. It's a constant
